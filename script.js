@@ -305,28 +305,35 @@ function confettiLoop() {
 }
 
 // === GOOGLE SHEET ===
-const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbxUSX1QEZ65goK82b3cMhx23gedEuKB_h_ZdjMj9zbD9gB7eWqH6sbZ81E3SBFL0z3U/exec";
+const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbwQ8wfgH4LwTZwAqdXrFWX74ucBOiM2cxU2TnF4E0tuafOZfPXDWBqvlQyt96XKLoX2/exec";
 
+// Verstuur resultaat naar Google Sheet
 async function sendResultToSheet(name, turns, time) {
   console.log("Sending to sheet:", { name, turns, time });
+
   try {
-    const res = await fetch(GOOGLE_SHEET_URL, {
+    const response = await fetch(GOOGLE_SHEET_URL + "?origin=" + window.location.origin, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ name, turns, time })
     });
-    console.log("Sheet response:", await res.text());
+
+    const text = await response.text();
+    console.log("Sheet response:", text);
   } catch (err) {
     console.error("Error sending to sheet:", err);
   }
 }
 
+// Haal top 5 scores op uit Google Sheet
 async function loadTopScores() {
   try {
-    const res = await fetch(GOOGLE_SHEET_URL);
-    const data = await res.json();
+    const response = await fetch(GOOGLE_SHEET_URL + "?origin=" + window.location.origin);
+    const data = await response.json();
+
     const list = document.getElementById("scores");
     list.innerHTML = "";
+
     data.slice(0, 5).forEach(([name, turns, time]) => {
       const li = document.createElement("li");
       li.textContent = `${name}: ${turns} turns (${time})`;
@@ -343,4 +350,6 @@ document.addEventListener("DOMContentLoaded", () => {
   createBoard();
   loadTopScores();
 });
+
+
 
