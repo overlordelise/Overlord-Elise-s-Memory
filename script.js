@@ -304,31 +304,44 @@ function confettiLoop() {
   confettiTimer = requestAnimationFrame(confettiLoop);
 }
 
-// === GOOGLE SHEET ===
-const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbx7g99RsWR3huOP3Dk-GSHdjMA4WlZm6nOqGS8WaXX3My9yqXsnRNBS4xPA5bcfTqWa/exec";
+// === GOOGLE SHEET ENDPOINT ===
+const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycby_kw8V-M38XhGvT76Z79-yIWhTIGJc4g6BGGDYWaBP0TkzFW8z-0fKSjWikfkyr3R6/exec";
 
-// Verstuur resultaat naar Google Sheet
+// === SCORE VERSTUREN ===
 async function sendResultToSheet(name, turns, time) {
-  console.log("Sending to sheet:", { name, turns, time });
+  console.log("📤 Sending to Google Sheet:", { name, turns, time });
 
   try {
     const response = await fetch(GOOGLE_SHEET_URL + "?origin=" + window.location.origin, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name, turns, time })
+      mode: "cors",
+      headers: {
+        "Content-Type": "application/json",
+        "Accept": "application/json",
+      },
+      body: JSON.stringify({ name, turns, time }),
     });
 
-    const text = await response.text();
-    console.log("Sheet response:", text);
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    const result = await response.json();
+    console.log("✅ Sheet response:", result);
+
   } catch (err) {
-    console.error("Error sending to sheet:", err);
+    console.error("❌ Error sending to sheet:", err);
   }
 }
 
-// Haal top 5 scores op uit Google Sheet
+// === SCORES LADEN ===
 async function loadTopScores() {
+  console.log("📥 Loading top scores...");
   try {
-    const response = await fetch(GOOGLE_SHEET_URL + "?origin=" + window.location.origin);
+    const response = await fetch(GOOGLE_SHEET_URL + "?origin=" + window.location.origin, {
+      method: "GET",
+      mode: "cors",
+      headers: { "Accept": "application/json" },
+    });
+
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
     const data = await response.json();
 
     const list = document.getElementById("scores");
@@ -336,11 +349,14 @@ async function loadTopScores() {
 
     data.slice(0, 5).forEach(([name, turns, time]) => {
       const li = document.createElement("li");
-      li.textContent = `${name}: ${turns} turns (${time})`;
+      li.textContent = `${name}: ${turns} beurten (${time})`;
       list.appendChild(li);
     });
+
+    console.log("✅ Scores loaded:", data);
+
   } catch (err) {
-    console.error("Error loading scores:", err);
+    console.error("❌ Error loading scores:", err);
   }
 }
 
@@ -350,6 +366,7 @@ document.addEventListener("DOMContentLoaded", () => {
   createBoard();
   loadTopScores();
 });
+
 
 
 
