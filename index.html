@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Overlord Elise's Memory Game</title>
+
+  <!-- Lobster font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Lobster&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <!-- START SCREEN -->
+  <div id="start-screen" class="screen">
+    <div class="start-card">
+      <h1 id="start-title">Overlord Elise's Memory Game</h1>
+
+      <!-- Changed label to “X username” to match the JS -->
+      <label for="twitter">X username</label>
+      <input id="twitter" type="text" placeholder="@yourhandle" />
+
+      <p id="start-instruction">Complete within 25 turns to win.</p>
+
+      <button id="start-btn" class="btn">Start Game</button>
+    </div>
+  </div>
+
+  <!-- GAME AREA -->
+  <div id="game-screen" class="hidden">
+    <header class="topbar">
+      <div class="title">Overlord Elise's Memory Game</div>
+
+      <!-- HUD section for timer, turns & restart -->
+      <div class="hud">
+        <div id="timer">Time: 00:00</div>
+        <div class="game-info">Turns: <span id="turns">0</span></div>
+        <button id="restart-top" class="btn small">Restart</button>
+      </div>
+    </header>
+
+    <main>
+      <div class="game-hud">
+        <!-- Scoreboard on the right -->
+        <aside id="scoreboard">
+          <h2>🏆 Top 5</h2>
+          <ul id="scores"></ul>
+        </aside>
+
+        <!-- Game board in the center -->
+        <section id="game-board" class="board"></section>
+      </div>
+    </main>
+  </div>
+
+  <!-- WIN SCREEN -->
+  <div id="win-screen" class="screen hidden">
+    <div class="result-card">
+      <h2 id="win-title" class="big">Good job, you won!</h2>
+      <img id="winner-image" src="" alt="Winner image" />
+      <button id="win-restart" class="btn">Play Again</button>
+    </div>
+  </div>
+
+  <!-- LOSE SCREEN -->
+  <div id="lose-screen" class="screen hidden">
+    <div class="result-card">
+      <h1 id="lose-title" class="big">You lose, pay up!</h1>
+      <h3 id="lose-sub">Better luck next time!</h3>
+
+      <!-- Action button text & URL controlled via script.js -->
+      <a id="lose-action" class="btn" href="#" target="_blank" rel="noopener">Action</a>
+      <button id="lose-restart" class="btn">Try Again</button>
+    </div>
+  </div>
+
+  <!-- Confetti canvas -->
+  <canvas id="confetti-canvas"></canvas>
+
+  <script src="script.js"></script>
+</body>
+</html>
+
