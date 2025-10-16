@@ -305,7 +305,7 @@ function confettiLoop() {
 }
 
 // === GOOGLE SHEET ===
-const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbwQ8wfgH4LwTZwAqdXrFWX74ucBOiM2cxU2TnF4E0tuafOZfPXDWBqvlQyt96XKLoX2/exec";
+const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbx7g99RsWR3huOP3Dk-GSHdjMA4WlZm6nOqGS8WaXX3My9yqXsnRNBS4xPA5bcfTqWa/exec";
 
 // Verstuur resultaat naar Google Sheet
 async function sendResultToSheet(name, turns, time) {
@@ -350,6 +350,7 @@ document.addEventListener("DOMContentLoaded", () => {
   createBoard();
   loadTopScores();
 });
+
 
 
 
