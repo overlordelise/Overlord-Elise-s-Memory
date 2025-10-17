@@ -305,7 +305,7 @@ function confettiLoop() {
 }
 
 // === GOOGLE SHEET ENDPOINT ===
-const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbwlDX1tgvLb3CSK6GpxAwQJ3nwCWqqHf3EZYbIlA2l-ubb0vS96GVtGuRbweyUfFLrE/exec";
+const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbxmm6tqq6pfQhDq5HsrD_pK7cTI4m0LXPtkQVM5j0XTQM1eJuLcGtsgRye_UGRCyMyb/exec";
 
 // === CONFIG ===
 const DEBUG = true; // Zet op false als alles werkt
@@ -409,6 +409,7 @@ document.addEventListener("DOMContentLoaded", () => {
   createBoard();
   loadTopScores();
 });
+
 
 
 
