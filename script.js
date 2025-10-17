@@ -305,51 +305,68 @@ function confettiLoop() {
 }
 
 // === GOOGLE SHEET ENDPOINT ===
-const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbyfxqwRrjvsf_21YBq9tVYjknCvGj_o8OWxpCShHmzjMXtpNiBEPpyBqzAZyaZBjLJq/exec";
+const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbwlDX1tgvLb3CSK6GpxAwQJ3nwCWqqHf3EZYbIlA2l-ubb0vS96GVtGuRbweyUfFLrE/exec";
+
+// === CONFIG ===
+const DEBUG = true; // Zet op false als alles werkt
 
 // === SCORE VERSTUREN ===
 async function sendResultToSheet(name, turns, time) {
-  console.log("📤 Sending to Google Sheet:", { name, turns, time });
+  if (DEBUG) console.log("📤 Sending to Google Sheet:", { name, turns, time });
 
   try {
-    // ⚡ Belangrijk: geen mode:'cors' -> voorkomt preflight
     const response = await fetch(GOOGLE_SHEET_URL, {
       method: "POST",
       headers: {
-        "Content-Type": "text/plain;charset=utf-8" // voorkomt OPTIONS-verzoek
+        "Content-Type": "text/plain;charset=utf-8"
       },
       body: JSON.stringify({ name, turns, time })
     });
 
     const text = await response.text();
-    console.log("✅ Sheet raw response:", text);
+    if (DEBUG) console.log("✅ Sheet raw response:", text);
 
-    const result = JSON.parse(text);
+    let result;
+    try {
+      result = JSON.parse(text);
+    } catch {
+      throw new Error("Ongeldige JSON-response van Google Script");
+    }
+
     if (result.success) {
-      console.log("✅ Successfully sent to sheet!");
+      if (DEBUG) console.log("✅ Successfully sent to sheet!");
+      showStatus("✅ Score opgeslagen!");
+      await loadTopScores(); // ververs meteen leaderboard
     } else {
-      console.warn("⚠️ Sheet error:", result.error);
+      showStatus("⚠️ Fout bij opslaan score.");
+      if (DEBUG) console.warn("⚠️ Sheet error:", result.error);
     }
 
   } catch (err) {
+    showStatus("❌ Kan geen verbinding maken met score-server.");
     console.error("❌ Error sending to sheet:", err);
   }
 }
 
 // === SCORES LADEN ===
 async function loadTopScores() {
-  console.log("📥 Loading top scores...");
-  try {
-    // ⚡ Ook hier: geen mode:'cors'
-    const response = await fetch(GOOGLE_SHEET_URL);
+  if (DEBUG) console.log("📥 Loading top scores...");
+  showStatus("📡 Scores laden...");
 
+  try {
+    const response = await fetch(GOOGLE_SHEET_URL);
     const text = await response.text();
-    console.log("✅ Sheet raw response:", text);
+    if (DEBUG) console.log("✅ Sheet raw response:", text);
 
     const data = JSON.parse(text);
 
     const list = document.getElementById("scores");
     list.innerHTML = "";
+
+    if (data.length === 0) {
+      list.innerHTML = "<li>Geen scores gevonden</li>";
+      return;
+    }
 
     data.slice(0, 5).forEach(([name, turns, time]) => {
       const li = document.createElement("li");
@@ -357,11 +374,33 @@ async function loadTopScores() {
       list.appendChild(li);
     });
 
-    console.log("✅ Scores loaded:", data);
+    showStatus("✅ Scores bijgewerkt!");
+    if (DEBUG) console.log("✅ Scores loaded:", data);
 
   } catch (err) {
+    showStatus("❌ Fout bij laden van scores.");
     console.error("❌ Error loading scores:", err);
   }
+}
+
+// === VISUELE STATUS MELDINGEN ===
+function showStatus(message) {
+  let el = document.getElementById("status");
+  if (!el) {
+    el = document.createElement("div");
+    el.id = "status";
+    el.style.position = "fixed";
+    el.style.bottom = "10px";
+    el.style.right = "10px";
+    el.style.background = "rgba(0,0,0,0.8)";
+    el.style.color = "white";
+    el.style.padding = "6px 12px";
+    el.style.borderRadius = "8px";
+    el.style.fontSize = "14px";
+    el.style.zIndex = "9999";
+    document.body.appendChild(el);
+  }
+  el.textContent = message;
 }
 
 // === INIT ===
@@ -370,6 +409,8 @@ document.addEventListener("DOMContentLoaded", () => {
   createBoard();
   loadTopScores();
 });
+
+
 
 
 
