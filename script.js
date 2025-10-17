@@ -305,7 +305,7 @@ function confettiLoop() {
 }
 
 // === GOOGLE SHEET ENDPOINT ===
-const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbwuDRxiH5Tvlr3ISeevuoCasDC70Rqxx_9nBpKj7lbLrzBs20siZjSJMjvAhzFN-AgN/exec";
+const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbxR7QWRpL4kBYFy-LWrHKHxKhIRTA-cgxjsLgwR5Ven2MaSFzlsawKjWTytKFLazB7i/exec";
 
 // === SCORE VERSTUREN ===
 async function sendResultToSheet(name, turns, time) {
@@ -366,6 +366,7 @@ document.addEventListener("DOMContentLoaded", () => {
   createBoard();
   loadTopScores();
 });
+
 
 
 
