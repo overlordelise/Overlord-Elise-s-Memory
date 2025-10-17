@@ -305,26 +305,31 @@ function confettiLoop() {
 }
 
 // === GOOGLE SHEET ENDPOINT ===
-const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbxR7QWRpL4kBYFy-LWrHKHxKhIRTA-cgxjsLgwR5Ven2MaSFzlsawKjWTytKFLazB7i/exec";
+const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbyfxqwRrjvsf_21YBq9tVYjknCvGj_o8OWxpCShHmzjMXtpNiBEPpyBqzAZyaZBjLJq/exec";
 
 // === SCORE VERSTUREN ===
 async function sendResultToSheet(name, turns, time) {
   console.log("📤 Sending to Google Sheet:", { name, turns, time });
 
   try {
-    const response = await fetch(GOOGLE_SHEET_URL + "?origin=" + window.location.origin, {
+    // ⚡ Belangrijk: geen mode:'cors' -> voorkomt preflight
+    const response = await fetch(GOOGLE_SHEET_URL, {
       method: "POST",
-      mode: "cors",
       headers: {
-        "Content-Type": "application/json",
-        "Accept": "application/json",
+        "Content-Type": "text/plain;charset=utf-8" // voorkomt OPTIONS-verzoek
       },
-      body: JSON.stringify({ name, turns, time }),
+      body: JSON.stringify({ name, turns, time })
     });
 
-    if (!response.ok) throw new Error(`HTTP ${response.status}`);
-    const result = await response.json();
-    console.log("✅ Sheet response:", result);
+    const text = await response.text();
+    console.log("✅ Sheet raw response:", text);
+
+    const result = JSON.parse(text);
+    if (result.success) {
+      console.log("✅ Successfully sent to sheet!");
+    } else {
+      console.warn("⚠️ Sheet error:", result.error);
+    }
 
   } catch (err) {
     console.error("❌ Error sending to sheet:", err);
@@ -335,14 +340,13 @@ async function sendResultToSheet(name, turns, time) {
 async function loadTopScores() {
   console.log("📥 Loading top scores...");
   try {
-    const response = await fetch(GOOGLE_SHEET_URL + "?origin=" + window.location.origin, {
-      method: "GET",
-      mode: "cors",
-      headers: { "Accept": "application/json" },
-    });
+    // ⚡ Ook hier: geen mode:'cors'
+    const response = await fetch(GOOGLE_SHEET_URL);
 
-    if (!response.ok) throw new Error(`HTTP ${response.status}`);
-    const data = await response.json();
+    const text = await response.text();
+    console.log("✅ Sheet raw response:", text);
+
+    const data = JSON.parse(text);
 
     const list = document.getElementById("scores");
     list.innerHTML = "";
@@ -366,6 +370,7 @@ document.addEventListener("DOMContentLoaded", () => {
   createBoard();
   loadTopScores();
 });
+
 
 
 
