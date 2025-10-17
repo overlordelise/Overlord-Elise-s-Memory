@@ -383,11 +383,17 @@ async function loadTopScores() {
       row => Array.isArray(row) && row.length >= 3 && row[0] && row[1] && row[2]
     );
 
-    cleanData.slice(0, 5).forEach(([name, turns, time]) => {
-      const li = document.createElement("li");
-      li.textContent = `${name}: ${turns} beurten (${time})`;
-      list.appendChild(li);
-    });
+    data.slice(0, 5).forEach(([name, turns, time], index) => {
+  const li = document.createElement("li");
+  li.innerHTML = `
+    <span class="rank">#${index + 1}</span>
+    <span class="player">${name}</span>
+    <span class="turns">${turns} beurten</span>
+    <span class="time">${new Date(time).toLocaleTimeString()}</span>
+  `;
+  list.appendChild(li);
+});
+
 
     showStatus("✅ Scores bijgewerkt!");
     if (DEBUG) console.log("✅ Scores loaded:", cleanData);
@@ -432,6 +438,49 @@ document.addEventListener("DOMContentLoaded", () => {
   createBoard();
   loadTopScores();
 });
+
+// 👇 PLAK HIER DIT STUK
+const style = document.createElement("style");
+style.textContent = `
+  #scores {
+    list-style: none;
+    padding: 0;
+    margin: 10px auto;
+    max-width: 400px;
+    background: rgba(0,0,0,0.6);
+    border-radius: 12px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.3);
+    overflow: hidden;
+  }
+  #scores li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 14px;
+    color: white;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    transition: background 0.3s ease;
+  }
+  #scores li:hover {
+    background: rgba(255,255,255,0.1);
+  }
+  .rank {
+    font-weight: bold;
+    color: #ffd700;
+  }
+  .player {
+    flex-grow: 1;
+    text-align: left;
+    margin-left: 10px;
+  }
+  .turns, .time {
+    font-size: 0.9em;
+    opacity: 0.8;
+  }
+`;
+document.head.appendChild(style);
+
+
 
 
 
